@@ -41,5 +41,5 @@ jobs:
       - name: Push Docker Image
         run: |
           docker build . -t ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ steps.versioning.outputs.version }}
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ steps.versioning.outputs.version }}
