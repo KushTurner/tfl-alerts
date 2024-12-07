@@ -1,5 +1,9 @@
 name: Deploy TFL Alerts
 
+env:
+  APP_NAME: tfl-alerts
+  GO_VERSION: 1.23.1
+
 on:
   push:
     branches: [ "main" ]
@@ -11,11 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.1'
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Build
         run: go build -v ./...
@@ -23,8 +29,16 @@ jobs:
       - name: Test
         run: go test -v ./...
 
+      - name: Increment Version
+        id: versioning
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          major_pattern: "(major)"
+          minor_pattern: "(minor)"
+          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+
       - name: Push Docker Image
         run: |
-          docker build . -t kushtt/tfl-alerts:0.0.1
-          docker login -u kushtt -p ${{ secrets.DOCKER_REGISTRY }}
-          docker push kushtt/tfl-alerts:0.0.1
+          docker build . -t ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ steps.versioning.outputs.version }}
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ env.VERSION }}
