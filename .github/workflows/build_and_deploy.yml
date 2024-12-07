@@ -33,9 +33,10 @@ jobs:
         id: versioning
         uses: paulhatch/semantic-version@v5.4.0
         with:
+          tag_prefix: "v"
           major_pattern: "(major)"
           minor_pattern: "(minor)"
-          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+          version_format: "${major}.${minor}.${increment}"
 
       - name: Push Docker Image
         run: |
