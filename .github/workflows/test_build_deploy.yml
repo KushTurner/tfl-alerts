@@ -1,4 +1,4 @@
-name: Deploy TFL Alerts
+name: Build and Deploy TFL Alerts
 
 env:
   APP_NAME: tfl-alerts
