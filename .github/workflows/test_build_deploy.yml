@@ -83,9 +83,9 @@ jobs:
           APPTOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ secrets.DEPLOY_USERNAME }}
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          host: ${{ secrets.DEPLOYMENT_SSH_HOST }}
+          username: ${{ secrets.DEPLOYMENT_SSH_USER }}
+          key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           script: |
             echo ${{ secrets.DOCKER_PASSWORD }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             cd ~/${{ github.event.repository.name }}
