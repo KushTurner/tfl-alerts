@@ -91,4 +91,4 @@ jobs:
             cd ~/${{ github.event.repository.name }}
             sudo docker compose up -d
             sudo docker system prune -f 
-            sudo docker images -a | grep -v "${APP_VERSION}" | awk '{print $1 ":" $2}' | xargs sudo docker rmi
+            sudo docker images -a | grep -v "${{ env.APP_VERSION }}" | awk '{print $1 ":" $2}' | xargs sudo docker rmi
