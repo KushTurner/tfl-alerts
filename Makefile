@@ -12,3 +12,6 @@ test:
 clean:
 	go clean
 	rm ./bin/${BINARY_NAME}
+
+build-deploy:
+	go build -o main .

@@ -7,7 +7,7 @@ COPY go.mod ./
 RUN go mod download
 COPY . .
 
-RUN go build -o main .
+RUN make build-deploy
 
 FROM scratch
 COPY --from=builder /app/main /main
