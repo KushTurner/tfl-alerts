@@ -1,0 +1,30 @@
+name: Deploy TFL Alerts
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.1'
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Push Docker Image
+        run: |
+          docker build . -t kushtt/tfl-alerts:0.0.1
+          docker login -u kushtt -p ${{ secrets.DOCKER_REGISTRY }}
+          docker push kushtt/tfl-alerts:0.0.1
