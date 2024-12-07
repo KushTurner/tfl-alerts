@@ -1,4 +1,3 @@
-version: '3'
 services:
   tfl-alerts:
     image: ${REGISTRY}/tfl-alerts:${APP_VERSION}
