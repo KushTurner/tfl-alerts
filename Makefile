@@ -1,10 +1,10 @@
 BINARY_NAME=tfl-alerts
 
 build:
-	go build -o bin/${BINARY_NAME} main.go
+	go build -o bin/${BINARY_NAME} ./cmd/main.go
 
 run:
-	go run main.go
+	go run cmd/main.go
 
 test:
 	go test -v ./...
@@ -14,4 +14,4 @@ clean:
 	rm ./bin/${BINARY_NAME}
 
 build-deploy:
-	go build -o main .
+	go build -o main ./cmd
