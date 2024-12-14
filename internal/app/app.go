@@ -17,5 +17,10 @@ func New(logger *slog.Logger) *App {
 }
 
 func (a *App) Start(ctx context.Context) error {
-	return nil
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		}
+	}
 }
