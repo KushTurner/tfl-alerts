@@ -2,7 +2,9 @@ package app
 
 import (
 	"context"
+	"github.com/go-co-op/gocron/v2"
 	"log/slog"
+	"time"
 )
 
 type App struct {
@@ -18,12 +20,27 @@ func New(logger *slog.Logger) *App {
 
 func (a *App) Start(ctx context.Context) error {
 
+	s, err := gocron.NewScheduler()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = s.NewJob(
+		gocron.DurationJob(2*time.Second),
+		gocron.NewTask(func() any { return 2 + 2 }))
+
+	if err != nil {
+		return err
+	}
+
+	s.Start()
+
 	a.logger.Info("server started")
 
-	for {
-		select {
-		case <-ctx.Done():
-			return nil
-		}
+	select {
+	case <-ctx.Done():
+		return nil
 	}
+
 }
