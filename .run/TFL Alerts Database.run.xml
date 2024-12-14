@@ -7,15 +7,15 @@
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
-              <option name="name" value="POSTGRES_PASSWORD" />
-              <option name="value" value="password" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="POSTGRES_USER" />
+              <option name="name" value="POSTGRES_DB" />
               <option name="value" value="postgres" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
-              <option name="name" value="POSTGRES_DB" />
+              <option name="name" value="POSTGRES_PASSWORD" />
+              <option name="value" value="postgres" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="POSTGRES_USER" />
               <option name="value" value="postgres" />
             </DockerEnvVarImpl>
           </list>

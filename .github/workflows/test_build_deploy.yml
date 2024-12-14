@@ -89,6 +89,6 @@ jobs:
           script: |
             echo ${{ secrets.DOCKER_PASSWORD }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             cd ~/${{ github.event.repository.name }}
+            sudo docker compose down --remove-orphans
             sudo docker compose up -d
-            sudo docker system prune -f
             sudo docker images -a | grep -v " ${{ env.APP_VERSION }} " | awk 'NR>1 {print $1 ":" $2}' | xargs sudo docker rmi
