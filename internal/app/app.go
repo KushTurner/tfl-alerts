@@ -17,6 +17,9 @@ func New(logger *slog.Logger) *App {
 }
 
 func (a *App) Start(ctx context.Context) error {
+
+	a.logger.Info("server started")
+
 	for {
 		select {
 		case <-ctx.Done():
