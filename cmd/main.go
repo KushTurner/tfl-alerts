@@ -1,21 +1,25 @@
 package main
 
 import (
-	"context"
-	"github.com/kushturner/tfl-alerts/internal/app"
-	"log/slog"
-	"os"
-	"os/signal"
+	"fmt"
+	"github.com/kushturner/tfl-alerts/internal/api"
+	"github.com/kushturner/tfl-alerts/internal/config"
+	"log"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
+	cfg, err := config.LoadConfig()
 
-	a := app.New(logger)
-
-	if err := a.Start(ctx); err != nil {
-		logger.Error("failed to start server", slog.Any("error", err))
+	if err != nil {
+		log.Panicf("unable to load config %v", err)
 	}
+
+	client := api.NewTflClient(cfg.TflConfig)
+
+	disruptions, err := client.AllCurrentDisruptions()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(disruptions)
 }

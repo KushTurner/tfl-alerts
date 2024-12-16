@@ -3,12 +3,14 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kushturner/tfl-alerts/internal/config"
 	"net/http"
 )
 
 type TflClient struct {
 	client *http.Client
 	url    string
+	appId  string
 }
 
 type TrainDisruption struct {
@@ -16,14 +18,16 @@ type TrainDisruption struct {
 	ClosureText string `json:"closureText"`
 }
 
-func NewTflClient() *TflClient {
-	return &TflClient{&http.Client{}, "https://api.tfl.gov.uk"}
+func NewTflClient(cfg *config.TflConfig) *TflClient {
+	return &TflClient{&http.Client{}, "https://api.tfl.gov.uk", cfg.AppId}
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
 	trainType := "tube"
 
 	req, err := http.NewRequest("GET", c.url+"/Line/Mode/"+trainType+"/Disruption", nil)
+	req.Header.Set("User-Agent", "tfl-alerts")
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request %v", err)
 	}

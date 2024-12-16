@@ -7,6 +7,10 @@ import (
 	"testing"
 )
 
+func FakeTflClient(url string) *TflClient {
+	return &TflClient{&http.Client{}, url, ""}
+}
+
 func TestGetAllDisruptions(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -17,7 +21,7 @@ func TestGetAllDisruptions(t *testing.T) {
 
 	td := []TrainDisruption{{Description: "Elizabeth line: Something happened", ClosureText: "severeDelays"}}
 
-	tfl := TflClient{&http.Client{}, server.URL}
+	tfl := FakeTflClient(server.URL)
 	resp, _ := tfl.AllCurrentDisruptions()
 
 	assert.Equal(t, td, resp)
