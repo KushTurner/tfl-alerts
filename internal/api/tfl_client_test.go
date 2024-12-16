@@ -1,4 +1,4 @@
-package tfl
+package api
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,7 @@ func TestGetAllDisruptions(t *testing.T) {
 
 	td := []TrainDisruption{{Description: "Elizabeth line: Something happened", ClosureText: "severeDelays"}}
 
-	tfl := TflService{&http.Client{}, server.URL}
+	tfl := TflClient{&http.Client{}, server.URL}
 	resp, _ := tfl.AllCurrentDisruptions()
 
 	assert.Equal(t, td, resp)
