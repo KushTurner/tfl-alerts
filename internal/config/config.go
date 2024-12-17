@@ -2,6 +2,7 @@ package config
 
 type TflConfig struct {
 	AppId string
+	Url   string
 }
 
 type AppConfig struct {
