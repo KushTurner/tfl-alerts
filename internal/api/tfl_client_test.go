@@ -8,7 +8,7 @@ import (
 )
 
 func FakeTflClient(url string) *TflClient {
-	return &TflClient{&http.Client{}, url, ""}
+	return &TflClient{&http.Client{}, url}
 }
 
 func TestGetAllDisruptions(t *testing.T) {
