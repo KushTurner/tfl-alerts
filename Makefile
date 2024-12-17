@@ -1,7 +1,7 @@
 BINARY_NAME=tfl-alerts
 
 build:
-	go build -o bin/${BINARY_NAME} .main.go
+	go build -o bin/${BINARY_NAME} main.go
 
 run:
 	go run main.go
