@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/kushturner/tfl-alerts/internal/api"
 	"github.com/kushturner/tfl-alerts/internal/config"
 	"log"
@@ -16,10 +15,5 @@ func main() {
 
 	client := api.NewTflClient(cfg.TflConfig)
 
-	disruptions, err := client.AllCurrentDisruptions()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(disruptions)
+	client.AllCurrentDisruptions()
 }

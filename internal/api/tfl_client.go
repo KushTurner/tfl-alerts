@@ -10,7 +10,6 @@ import (
 type TflClient struct {
 	client *http.Client
 	url    string
-	appId  string
 }
 
 type TrainDisruption struct {
@@ -19,13 +18,13 @@ type TrainDisruption struct {
 }
 
 func NewTflClient(cfg *config.TflConfig) *TflClient {
-	return &TflClient{&http.Client{}, cfg.Url, cfg.AppId}
+	return &TflClient{&http.Client{}, cfg.Url}
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
 	trainType := "tube"
 
-	resp, err := c.client.Get(c.url + "/Line/Mode/" + trainType + "/Disruption")
+	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Disruption")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch disruptions %v", err)
 	}
@@ -45,10 +44,10 @@ func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
 	return t, nil
 }
 
-func (c *TflClient) Get(url string) (*http.Response, error) {
+func (c *TflClient) get(url string) (*http.Response, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "tfl-alerts")
+	req.Header.Set("User-Agent", "")
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request %v", err)
