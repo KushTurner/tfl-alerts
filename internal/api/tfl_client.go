@@ -3,9 +3,12 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kushturner/tfl-alerts/internal/config"
 	"net/http"
 )
+
+type TflConfig struct {
+	Url string
+}
 
 type TflClient struct {
 	client *http.Client
@@ -17,8 +20,8 @@ type TrainDisruption struct {
 	ClosureText string `json:"closureText"`
 }
 
-func NewTflClient(cfg *config.TflConfig) *TflClient {
-	return &TflClient{&http.Client{}, cfg.Url}
+func NewTflClient(cfg *TflConfig) (*TflClient, error) {
+	return &TflClient{&http.Client{}, cfg.Url}, nil
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
