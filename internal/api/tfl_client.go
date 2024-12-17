@@ -41,7 +41,7 @@ func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
 	var t []TrainDisruption
 
 	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
-		return nil, fmt.Errorf("failed to decode disruptions %v", err)
+		return nil, fmt.Errorf("failed to decode disruptions: %v", err)
 	}
 
 	return t, nil
@@ -53,7 +53,7 @@ func (c *TflClient) get(url string) (*http.Response, error) {
 	req.Header.Set("User-Agent", "")
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request %v", err)
+		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
 	resp, err := c.client.Do(req)

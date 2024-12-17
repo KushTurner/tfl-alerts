@@ -32,12 +32,12 @@ func initTfl() (*api.TflConfig, error) {
 func LoadAppConfig() (*AppConfig, error) {
 	db, err := initDatabase()
 	if err != nil {
-		log.Fatalf("unable to initialize database config %v", err)
+		log.Fatalf("unable to initialize database config: %v", err)
 	}
 
 	tfl, err := initTfl()
 	if err != nil {
-		log.Fatalf("unable to initialize tfl client config %v", err)
+		log.Fatalf("unable to initialize tfl client config: %v", err)
 	}
 
 	return &AppConfig{
