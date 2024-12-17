@@ -1,8 +1,7 @@
 package config
 
 type TflConfig struct {
-	AppId string
-	Url   string
+	Url string
 }
 
 type AppConfig struct {
@@ -11,6 +10,6 @@ type AppConfig struct {
 
 func LoadConfig() (*AppConfig, error) {
 	return &AppConfig{
-		&TflConfig{AppId: ""},
+		&TflConfig{Url: "https://api.tfl.gov.uk"},
 	}, nil
 }
