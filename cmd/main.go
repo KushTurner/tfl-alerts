@@ -1,19 +1,17 @@
 package main
 
 import (
-	"github.com/kushturner/tfl-alerts/internal/api"
+	"fmt"
 	"github.com/kushturner/tfl-alerts/internal/config"
 	"log"
 )
 
 func main() {
-	cfg, err := config.LoadConfig()
+	cfg, err := config.LoadAppConfig()
 
 	if err != nil {
 		log.Panicf("unable to load config %v", err)
 	}
 
-	client := api.NewTflClient(cfg.TflConfig)
-
-	client.AllCurrentDisruptions()
+	fmt.Println(cfg)
 }
