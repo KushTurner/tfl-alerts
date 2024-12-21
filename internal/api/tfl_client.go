@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type TflConfig struct {
@@ -18,6 +19,10 @@ type TflClient struct {
 type TrainDisruption struct {
 	Description string `json:"description"`
 	ClosureText string `json:"closureText"`
+}
+
+func (td TrainDisruption) getDisruptedTrain() string {
+	return strings.Split(td.Description, ":")[0]
 }
 
 func NewTflClient(cfg *TflConfig) (*TflClient, error) {
