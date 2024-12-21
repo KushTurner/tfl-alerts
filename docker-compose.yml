@@ -1,3 +1,5 @@
 services:
   app:
     image: ${REGISTRY}/tfl-alerts:${APP_VERSION}
+    environment:
+      DB_URL: ${DB_URL}
