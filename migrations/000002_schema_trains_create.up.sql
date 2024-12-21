@@ -1,0 +1,5 @@
+CREATE TABLE trains
+(
+    id   SERIAL PRIMARY KEY,
+    line VARCHAR(255) NOT NULL
+);
