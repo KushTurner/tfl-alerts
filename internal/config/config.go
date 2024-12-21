@@ -14,12 +14,7 @@ type AppConfig struct {
 
 func initDatabase() (*database.Config, error) {
 	return &database.Config{
-		Username: getEnv("DB_USERNAME", "postgres"),
-		Password: getEnv("DB_PASSWORD", "postgres"),
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "5432"),
-		DBName:   getEnv("DB_NAME", "postgres"),
-		SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		ConnStr: getEnv("DB_URL", "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"),
 	}, nil
 }
 
