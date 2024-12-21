@@ -17,26 +17,11 @@ type DB struct {
 }
 
 type Config struct {
-	Username string
-	Password string
-	Host     string
-	Port     string
-	DBName   string
-	SSLMode  string
-}
-
-func dbURL(cfg *Config) string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode)
+	ConnStr string
 }
 
 func Connect(ctx context.Context, cfg *Config, migrations fs.FS) (*DB, error) {
-	parsedConfig, _ := pgxpool.ParseConfig(
-		fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=%s",
-			cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode))
-
-	dbUrl := dbURL(cfg)
-
-	pgx, err := pgxpool.NewWithConfig(ctx, parsedConfig)
+	pgx, err := pgxpool.New(ctx, cfg.ConnStr)
 
 	if err != nil {
 		return nil, fmt.Errorf("config was incorrect: %v", err)
@@ -51,7 +36,7 @@ func Connect(ctx context.Context, cfg *Config, migrations fs.FS) (*DB, error) {
 		return nil, fmt.Errorf("failed to create source: %w", err)
 	}
 
-	migrator, err := migrate.NewWithSourceInstance("iofs", source, dbUrl)
+	migrator, err := migrate.NewWithSourceInstance("iofs", source, cfg.ConnStr)
 	if err != nil {
 		return nil, fmt.Errorf("migrate new: %s", err)
 	}
