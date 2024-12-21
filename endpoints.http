@@ -1,0 +1,13 @@
+### Get all different modes
+GET https://api.tfl.gov.uk/Line/Meta/Modes
+User-Agent: ""
+
+### Get status by mode
+GET https://api.tfl.gov.uk/Line/Mode/tube,overground,national-rail,elizabeth-line,dlr/Status
+User-Agent: ""
+
+### Get all current disruptions
+GET https://api.tfl.gov.uk/Line/Mode/tube,overground,national-rail,elizabeth-line,dlr/Disruption
+User-Agent: ""
+
+curl -s https://api.tfl.gov.uk/Line/Mode/tube,overground,national-rail,elizabeth-line,dlr/Status -H "User-Agent: """ | jq '.[] | .name'

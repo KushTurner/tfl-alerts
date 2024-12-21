@@ -30,7 +30,7 @@ func NewTflClient(cfg *TflConfig) (*TflClient, error) {
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
-	trainType := "tube"
+	trainType := "tube,overground,national-rail,elizabeth-line,dlr"
 
 	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Disruption")
 	if err != nil {
