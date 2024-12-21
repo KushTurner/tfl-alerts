@@ -26,3 +26,9 @@ func TestGetAllDisruptions(t *testing.T) {
 
 	assert.Equal(t, td, resp)
 }
+
+func TestGetDisruptedTrain(t *testing.T) {
+	td := TrainDisruption{Description: "Elizabeth Line: Something happened", ClosureText: "severeDelays"}
+
+	assert.Equal(t, "Elizabeth Line", td.getDisruptedTrain())
+}
