@@ -3,18 +3,13 @@ package repository
 import (
 	"context"
 	"github.com/kushturner/tfl-alerts/internal/database"
+	"github.com/kushturner/tfl-alerts/internal/models"
 	"time"
 )
 
-type User struct {
-	ID           int
-	LastNotified time.Time
-	Number       string
-}
-
 type Repository interface {
-	FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*User, error)
-	UpdateUserLastNotified(ctx context.Context, userID int) (*User, error)
+	FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*models.User, error)
+	UpdateUserLastNotified(ctx context.Context, userID int) (*models.User, error)
 }
 
 type SQLRepository struct {
@@ -27,7 +22,7 @@ func NewSQLRepository(db *database.DB) *SQLRepository {
 	}
 }
 
-func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*User, error) {
+func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*models.User, error) {
 
 	sql := `
 		SELECT u.id, u.last_notified, u.phone_number
@@ -45,11 +40,11 @@ func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train s
 		return nil, err
 	}
 
-	var users []*User
+	var users []*models.User
 
 	for rows.Next() {
 
-		user := &User{}
+		user := &models.User{}
 		err := rows.Scan(&user.ID, &user.LastNotified, &user.Number)
 
 		if err != nil {

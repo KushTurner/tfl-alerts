@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/kushturner/tfl-alerts/internal/api"
 	"github.com/kushturner/tfl-alerts/internal/database"
+	"github.com/kushturner/tfl-alerts/internal/notification"
 	"log"
 	"os"
 )
@@ -10,6 +11,7 @@ import (
 type AppConfig struct {
 	TflConfig      *api.TflConfig
 	DatabaseConfig *database.Config
+	TwilioConfig   *notification.TwilioConfig
 }
 
 func initDatabase() (*database.Config, error) {
@@ -24,6 +26,14 @@ func initTfl() (*api.TflConfig, error) {
 	}, nil
 }
 
+func initTwilio() (*notification.TwilioConfig, error) {
+	return &notification.TwilioConfig{
+		From:       getEnv("TWILIO_FROM", ""),
+		AccountSID: getEnv("TWILIO_ACCOUNT_SID", ""),
+		AuthToken:  getEnv("TWILIO_AUTH_TOKEN", ""),
+	}, nil
+}
+
 func LoadAppConfig() (*AppConfig, error) {
 	db, err := initDatabase()
 	if err != nil {
@@ -35,9 +45,15 @@ func LoadAppConfig() (*AppConfig, error) {
 		log.Fatalf("unable to initialize tfl client config: %v", err)
 	}
 
+	twilio, err := initTwilio()
+	if err != nil {
+		log.Fatalf("unable to initialize twilio client config: %v", err)
+	}
+
 	return &AppConfig{
 		tfl,
 		db,
+		twilio,
 	}, nil
 }
 
