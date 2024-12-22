@@ -14,6 +14,7 @@ type User struct {
 
 type Repository interface {
 	FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*User, error)
+	UpdateUserLastNotified(ctx context.Context, userID int) (*User, error)
 }
 
 type SQLRepository struct {
@@ -59,5 +60,18 @@ func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train s
 	}
 
 	return users, nil
+}
 
+func (r SQLRepository) UpdateUserLastNotified(ctx context.Context, userID int) error {
+	sql := `
+        UPDATE users 
+        SET last_notified = $1
+        WHERE id = $2`
+
+	_, err := r.db.Exec(ctx, sql, time.Now(), userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
