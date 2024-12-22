@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 type TflConfig struct {
@@ -16,25 +15,27 @@ type TflClient struct {
 	url    string
 }
 
-type TrainDisruption struct {
-	Description string `json:"description"`
-	ClosureText string `json:"closureText"`
+type TrainStatus struct {
+	Name         string       `json:"name"`
+	LineStatuses []LineStatus `json:"lineStatuses"`
 }
 
-func (td *TrainDisruption) getDisruptedTrain() string {
-	return strings.Split(td.Description, ":")[0]
+type LineStatus struct {
+	StatusSeverity            int    `json:"statusSeverity"`
+	StatusSeverityDescription string `json:"statusSeverityDescription"`
+	Reason                    string `json:"reason"`
 }
 
 func NewTflClient(cfg *TflConfig) (*TflClient, error) {
 	return &TflClient{&http.Client{}, cfg.Url}, nil
 }
 
-func (c *TflClient) AllCurrentDisruptions() ([]*TrainDisruption, error) {
+func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
 	trainType := "tube,overground,national-rail,elizabeth-line,dlr"
 
-	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Disruption")
+	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Status")
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch disruptions %v", err)
+		return nil, fmt.Errorf("failed to fetch status: %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -43,7 +44,7 @@ func (c *TflClient) AllCurrentDisruptions() ([]*TrainDisruption, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var t []*TrainDisruption
+	var t []TrainStatus
 
 	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
 		return nil, fmt.Errorf("failed to decode disruptions: %v", err)
