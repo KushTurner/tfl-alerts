@@ -21,7 +21,7 @@ type TrainDisruption struct {
 	ClosureText string `json:"closureText"`
 }
 
-func (td TrainDisruption) getDisruptedTrain() string {
+func (td *TrainDisruption) getDisruptedTrain() string {
 	return strings.Split(td.Description, ":")[0]
 }
 
@@ -29,7 +29,7 @@ func NewTflClient(cfg *TflConfig) (*TflClient, error) {
 	return &TflClient{&http.Client{}, cfg.Url}, nil
 }
 
-func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
+func (c *TflClient) AllCurrentDisruptions() ([]*TrainDisruption, error) {
 	trainType := "tube,overground,national-rail,elizabeth-line,dlr"
 
 	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Disruption")
@@ -43,7 +43,7 @@ func (c *TflClient) AllCurrentDisruptions() ([]TrainDisruption, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var t []TrainDisruption
+	var t []*TrainDisruption
 
 	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
 		return nil, fmt.Errorf("failed to decode disruptions: %v", err)

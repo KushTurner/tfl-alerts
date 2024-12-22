@@ -19,7 +19,7 @@ func TestGetAllDisruptions(t *testing.T) {
 
 	defer server.Close()
 
-	td := []TrainDisruption{{Description: "Elizabeth line: Something happened", ClosureText: "severeDelays"}}
+	td := []*TrainDisruption{{Description: "Elizabeth line: Something happened", ClosureText: "severeDelays"}}
 
 	tfl := FakeTflClient(server.URL)
 	resp, _ := tfl.AllCurrentDisruptions()

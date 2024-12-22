@@ -1,4 +1,4 @@
-CREATE TABLE notification_windows
+CREATE TABLE IF NOT EXISTS notification_windows
 (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER REFERENCES users (id),
