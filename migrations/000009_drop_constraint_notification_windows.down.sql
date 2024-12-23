@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS notification_windows ADD CONSTRAINT notification_windows_user_id_train_id_key UNIQUE (user_id, train_id);

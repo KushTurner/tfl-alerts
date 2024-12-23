@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS notification_windows DROP CONSTRAINT notification_windows_user_id_train_id_key;
