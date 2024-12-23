@@ -32,9 +32,12 @@ func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train s
         		JOIN notification_windows nw ON u.id = nw.user_id
         		JOIN trains t ON nw.train_id = t.id
 		WHERE lower(t.line) = lower($1)
-  			AND now() BETWEEN nw.start_time AND nw.end_time`
+		  	AND $2 = nw.weekday
+  			AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
 
-	rows, err := r.db.Query(ctx, sql, train)
+	weekday := int(time.Now().Weekday())
+
+	rows, err := r.db.Query(ctx, sql, train, weekday)
 
 	defer rows.Close()
 
@@ -94,9 +97,12 @@ func (r SQLRepository) FindTrainsThatAreWithinWindow(ctx context.Context) ([]*mo
 		SELECT DISTINCT t.id, t.line, t.previous_severity, t.severity
 		FROM trains t
 			JOIN notification_windows nw ON t.id = nw.train_id
-		WHERE now() BETWEEN nw.start_time AND nw.end_time`
+		WHERE nw.weekday = $1
+		    AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
 
-	rows, err := r.db.Query(ctx, sql)
+	weekday := int(time.Now().Weekday())
+
+	rows, err := r.db.Query(ctx, sql, weekday)
 
 	defer rows.Close()
 
