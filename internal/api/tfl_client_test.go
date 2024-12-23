@@ -15,7 +15,7 @@ func TestGetAllDisruptions(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(
-			`[{"name":"Avanti West Coast","lineStatuses":[{"statusSeverity":9,"statusSeverityDescription":"Minor Delays","reason":"https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/"}]}, {"name":"Avanti West Coast","lineStatuses":[{"statusSeverity":0,"statusSeverityDescription":"Special Service","reason":"https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/"}]}]`))
+			`[{"name":"Avanti West Coast","lineStatuses":[{"statusSeverity":9,"statusSeverityDescription":"Minor Delays","reason":"https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/"}]}]`))
 	}))
 
 	defer server.Close()
