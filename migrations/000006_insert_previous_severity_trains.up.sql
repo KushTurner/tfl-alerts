@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS trains ADD COLUMN previous_severity INTEGER NULL;

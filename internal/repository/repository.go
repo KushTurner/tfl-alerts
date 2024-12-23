@@ -9,7 +9,9 @@ import (
 
 type Repository interface {
 	FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*models.User, error)
-	UpdateUserLastNotified(ctx context.Context, userID int) (*models.User, error)
+	UpdateUserLastNotified(ctx context.Context, userID int) error
+	UpdateTrainStatus(ctx context.Context, train string, severity int) error
+	FindTrainsThatAreWithinWindow(ctx context.Context) ([]*models.Train, error)
 }
 
 type SQLRepository struct {
@@ -69,4 +71,51 @@ func (r SQLRepository) UpdateUserLastNotified(ctx context.Context, userID int) e
 	}
 
 	return nil
+}
+
+func (r SQLRepository) UpdateTrainStatus(ctx context.Context, train string, severity int) error {
+	sql := `
+        UPDATE trains 
+        SET previous_severity = severity,
+        	severity = $1,
+        	last_updated = now()
+        WHERE lower(line) = lower($2)`
+
+	_, err := r.db.Exec(ctx, sql, train, severity)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r SQLRepository) FindTrainsThatAreWithinWindow(ctx context.Context) ([]*models.Train, error) {
+	sql := `
+		SELECT DISTINCT t.id, t.line, t.previous_severity, t.severity
+		FROM trains t
+			JOIN notification_windows nw ON t.id = nw.train_id
+		WHERE now() BETWEEN nw.start_time AND nw.end_time`
+
+	rows, err := r.db.Query(ctx, sql)
+
+	defer rows.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var trains []*models.Train
+
+	for rows.Next() {
+		train := &models.Train{}
+		err := rows.Scan(&train.ID, &train.Line, &train.PreviousSeverity, &train.Severity)
+
+		if err != nil {
+			return nil, err
+		}
+
+		trains = append(trains, train)
+	}
+
+	return trains, nil
 }
