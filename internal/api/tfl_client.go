@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 )
 
 type TflConfig struct {
@@ -50,7 +51,16 @@ func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
 		return nil, fmt.Errorf("failed to decode disruptions: %v", err)
 	}
 
-	return t, nil
+	var dt []TrainStatus
+
+	for _, train := range t {
+		// npe?
+		if slices.Contains([]int{6, 9}, train.LineStatuses[0].StatusSeverity) {
+			dt = append(dt, train)
+		}
+	}
+
+	return dt, nil
 }
 
 func (c *TflClient) get(url string) (*http.Response, error) {
