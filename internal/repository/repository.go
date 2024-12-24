@@ -84,7 +84,7 @@ func (r SQLRepository) UpdateTrainStatus(ctx context.Context, train string, seve
         	last_updated = now()
         WHERE lower(line) = lower($2)`
 
-	_, err := r.db.Exec(ctx, sql, train, severity)
+	_, err := r.db.Exec(ctx, sql, severity, train)
 	if err != nil {
 		return err
 	}
