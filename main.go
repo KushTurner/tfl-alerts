@@ -22,8 +22,6 @@ var migrations embed.FS
 var seeds embed.FS
 
 func main() {
-	log.Printf("Today is %v", time.Now().Weekday())
-
 	cfg, err := config.LoadAppConfig()
 	if err != nil {
 		log.Panicf("unable to load config: %v", err)
@@ -44,7 +42,7 @@ func main() {
 
 	svc := service.NewDisruptionService(repo, smsNotifier, tfl)
 
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
 
 	sigChan := make(chan os.Signal, 1)
