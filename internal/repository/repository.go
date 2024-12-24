@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/models"
 	"time"
@@ -37,8 +36,6 @@ func (r SQLRepository) FindUsersWithDisruptedTrains(ctx context.Context, train s
   			AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
 
 	weekday := int(time.Now().Weekday())
-
-	fmt.Printf("Today is %v\n", weekday)
 
 	rows, err := r.db.Query(ctx, sql, train, weekday)
 
