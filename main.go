@@ -42,7 +42,7 @@ func main() {
 
 	svc := service.NewDisruptionService(repo, smsNotifier, tfl)
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
 	sigChan := make(chan os.Signal, 1)
