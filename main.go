@@ -22,6 +22,8 @@ var migrations embed.FS
 var seeds embed.FS
 
 func main() {
+	log.Printf("Today is %v", time.Now().Weekday())
+
 	cfg, err := config.LoadAppConfig()
 	if err != nil {
 		log.Panicf("unable to load config: %v", err)
