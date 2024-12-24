@@ -27,7 +27,7 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 	trains, err := s.Repo.FindTrainsThatAreWithinWindow(ctx)
 
 	if err != nil {
-		log.Printf("unable to fund users that are within window: %v", err)
+		log.Printf("unable to find users that are within window: %v", err)
 	}
 
 	if len(trains) == 0 {
