@@ -51,8 +51,8 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			svc.FindUsersAndNotify(ctx)
 			svc.PollTrains(ctx)
+			svc.FindUsersAndNotify(ctx)
 		case <-sigChan:
 			log.Println("stopping service...")
 			return
