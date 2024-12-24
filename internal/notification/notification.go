@@ -22,11 +22,10 @@ func NewSMSNotifier(t *TwilioClient) (Notifier, error) {
 }
 
 func (n SMSNotifier) Notify(msg interface{}, to string) error {
-	channel := "whatsapp:"
 
 	params := &twilioApi.CreateMessageParams{}
-	params.SetTo(channel + to)
-	params.SetFrom(channel + n.from)
+	params.SetTo(to)
+	params.SetFrom(n.from)
 	params.SetBody(msg.(string))
 
 	_, err := n.twilio.Api.CreateMessage(params)

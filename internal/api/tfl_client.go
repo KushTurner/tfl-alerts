@@ -26,8 +26,8 @@ type LineStatus struct {
 	Reason                    string `json:"reason"`
 }
 
-func NewTflClient(cfg *TflConfig) (*TflClient, error) {
-	return &TflClient{&http.Client{}, cfg.Url}, nil
+func NewTflClient(cfg *TflConfig) (TflClient, error) {
+	return TflClient{&http.Client{}, cfg.Url}, nil
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
