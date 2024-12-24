@@ -3,3 +3,6 @@ services:
     image: ${REGISTRY}/tfl-alerts:${APP_VERSION}
     environment:
       DB_URL: ${DB_URL}
+      TWILIO_FROM: ${TWILIO_FROM}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
