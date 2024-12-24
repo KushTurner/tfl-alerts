@@ -68,6 +68,9 @@ jobs:
           echo "APP_VERSION=${{ env.APP_VERSION }}" >> .env
           echo "REGISTRY=${{ secrets.DOCKER_USERNAME }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "TWILIO_FROM=${{ env.TWILIO_FROM }}" >> .env
+          echo "TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}" >> .env
+          echo "TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}" >> .env
 
       - name: Copy Files To Server via SCP
         uses: appleboy/scp-action@v0.1.7
