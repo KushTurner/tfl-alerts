@@ -9,6 +9,6 @@ COPY . .
 
 RUN make build-deploy
 
-FROM scratch
+FROM alpine:latest
 COPY --from=builder /app/main /main
 ENTRYPOINT ["/main"]
