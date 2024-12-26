@@ -1,8 +1,8 @@
-### I don't want to get a notification if I've already got it before
+### How it works
 
-1. table with users - id, notification_windows, last_notified, number, lines
-2. table with train_lines - name, status, description
-3. get users which have times within notification window
-4. if status from lines table is not equal to status from api or last_notified was not within window or null, send notification 
-5. update last_notified for user
-6. update status for train
+1. Poll TFL (every x) for current status of trains and update database
+2. Get any trains that any user has subscribed to during the current time
+3. For each train, look for users that have subscribed to trains during the current time
+4. Check if current severity is different to previous severity
+5. If different, notify each user
+6. Update user last notified
