@@ -42,7 +42,7 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 		if t.Severity == 9 || t.Severity == 6 {
 			users, _ := s.Repo.FindUsersWithDisruptedTrains(ctx, t.Line)
 			for _, u := range users {
-				msg := fmt.Sprintf("My glorious King, there are %v on the %v.", severity[t.Severity], t.Line)
+				msg := fmt.Sprintf("There are %v on the %v.", severity[t.Severity], t.Line)
 
 				if err := s.Notifier.Notify(msg, u.Number); err != nil {
 					log.Printf("unable to notify user: %v", err)
