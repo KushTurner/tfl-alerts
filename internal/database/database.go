@@ -14,3 +14,10 @@ type TflAlertsDatabase struct {
 	TrainsRepository
 	UsersRepository
 }
+
+func NewTflAlertsDatabase(db *DB) TflAlertsDatabase {
+	return TflAlertsDatabase{
+		TrainsRepository: PostgresTrainsRepository{db},
+		UsersRepository:  PostgresUsersRepository{db},
+	}
+}

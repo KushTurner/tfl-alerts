@@ -34,11 +34,7 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	db := database.TflAlertsDatabase{
-		TrainsRepository: database.PostgresTrainsRepository{Db: dbConn},
-		UsersRepository:  database.PostgresUsersRepository{Db: dbConn},
-	}
-
+	db := database.NewTflAlertsDatabase(dbConn)
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
 	tfl, _ := api.NewTflClient(cfg.TflConfig)
