@@ -26,14 +26,14 @@ type LineStatus struct {
 	Reason                    string `json:"reason"`
 }
 
+const trainTypes string = "tube,overground,national-rail,elizabeth-line,dlr"
+
 func NewTflClient(cfg *TflConfig) (TflClient, error) {
 	return TflClient{&http.Client{}, cfg.Url}, nil
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
-	trainType := "tube,overground,national-rail,elizabeth-line,dlr"
-
-	resp, err := c.get(c.url + "/Line/Mode/" + trainType + "/Status")
+	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch status: %v", err)
 	}
