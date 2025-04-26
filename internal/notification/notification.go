@@ -6,7 +6,7 @@ import (
 )
 
 type Notifier interface {
-	Notify(data interface{}, to string) error
+	Notify(msg string, to string) error
 }
 
 type SMSNotifier struct {
@@ -21,12 +21,12 @@ func NewSMSNotifier(t *TwilioClient) (Notifier, error) {
 	}, nil
 }
 
-func (n SMSNotifier) Notify(msg interface{}, to string) error {
+func (n SMSNotifier) Notify(msg string, to string) error {
 
 	params := &twilioApi.CreateMessageParams{}
 	params.SetTo(to)
 	params.SetFrom(n.from)
-	params.SetBody(msg.(string))
+	params.SetBody(msg)
 
 	_, err := n.twilio.Api.CreateMessage(params)
 
