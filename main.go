@@ -7,7 +7,6 @@ import (
 	"github.com/kushturner/tfl-alerts/internal/config"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
-	"github.com/kushturner/tfl-alerts/internal/repository"
 	"github.com/kushturner/tfl-alerts/internal/service"
 	"log"
 	"os"
@@ -29,18 +28,22 @@ func main() {
 
 	ctx := context.Background()
 
-	db, err := database.Connect(ctx, cfg.DatabaseConfig, migrations, seeds)
+	dbConn, err := database.Connect(ctx, cfg.DatabaseConfig, migrations, seeds)
 	if err != nil {
 		log.Panicf("unable to connect to database %v", err)
 	}
-	defer db.Close()
+	defer dbConn.Close()
 
-	repo := repository.NewSQLRepository(db)
+	db := database.TflAlertsDatabase{
+		TrainsRepository: database.PostgresTrainsRepository{Db: dbConn},
+		UsersRepository:  database.PostgresUsersRepository{Db: dbConn},
+	}
+
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
 	tfl, _ := api.NewTflClient(cfg.TflConfig)
 
-	svc := service.NewDisruptionService(repo, smsNotifier, tfl)
+	svc := service.NewDisruptionService(db, smsNotifier, tfl)
 
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
