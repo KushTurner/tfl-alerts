@@ -11,8 +11,8 @@ type TflConfig struct {
 }
 
 type TflClient struct {
-	client *http.Client
-	url    string
+	Client *http.Client
+	Url    string
 }
 
 type TrainStatus struct {
@@ -33,7 +33,7 @@ func NewTflClient(cfg *TflConfig) (TflClient, error) {
 }
 
 func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
-	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status")
+	resp, err := c.get(c.Url + "/Line/Mode/" + trainTypes + "/Status")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch status: %v", err)
 	}
@@ -62,7 +62,7 @@ func (c *TflClient) get(url string) (*http.Response, error) {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
