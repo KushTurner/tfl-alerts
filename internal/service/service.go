@@ -24,25 +24,17 @@ func NewDisruptionService(database database.TflAlertsDatabase, notifier notifica
 }
 
 func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
-	trains, err := s.Database.TrainsRepository.FindTrainsThatAreWithinWindow(ctx)
-
-	if err != nil {
-		log.Printf("unable to find users that are within window: %v", err)
-	}
-
-	if len(trains) == 0 {
-		return nil
-	}
+	trains, _ := s.Database.TrainsRepository.FindTrainsThatAreWithinWindow(ctx)
 
 	for _, t := range trains {
 		if t.PreviousSeverity == t.Severity {
 			continue
 		}
 
-		if t.Severity == 9 || t.Severity == 6 {
+		if t.IsDisrupted() {
 			users, _ := s.Database.UsersRepository.FindUsersWithDisruptedTrains(ctx, t.Line)
 			for _, u := range users {
-				msg := fmt.Sprintf("There are %v on the %v.", severity[t.Severity], t.Line)
+				msg := fmt.Sprintf("There are %v on the %v.", t.SeverityMessage(), t.Line)
 
 				if err := s.Notifier.Notify(msg, u.Number); err != nil {
 					log.Printf("unable to notify user: %v", err)
@@ -73,27 +65,4 @@ func (s DisruptionService) PollTrains(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-var severity = map[int]string{
-	1:  "Closed",
-	2:  "Suspended",
-	3:  "Part Suspended",
-	4:  "Planned Closure",
-	5:  "Part Closure",
-	6:  "Severe Delays",
-	7:  "Reduced service",
-	8:  "Bus Service",
-	9:  "Minor Delays",
-	10: "Good Service",
-	11: "Part Closed",
-	12: "Exit Only",
-	13: "No Step Free Access",
-	14: "Change of Frequency",
-	15: "Diverted",
-	16: "Not Running",
-	17: "Issues Reported",
-	18: "No Issues",
-	19: "Information",
-	20: "Service Closed",
 }
