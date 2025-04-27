@@ -15,16 +15,16 @@ type DisruptionService struct {
 	UserService  NotificationService
 }
 
-func (o DisruptionService) Start(ctx context.Context) {
-	err := o.TrainService.Update(ctx)
+func (ds DisruptionService) Start(ctx context.Context) {
+	err := ds.TrainService.Update(ctx)
 	if err != nil {
 		log.Printf("Error updating training data: %v", err)
 	}
-	lines, err := o.TrainService.Get(ctx)
+	lines, err := ds.TrainService.Get(ctx)
 	if err != nil {
 		log.Printf("Error getting training data: %v", err)
 	}
-	o.UserService.FindAndNotify(ctx, lines)
+	ds.UserService.FindAndNotify(ctx, lines)
 }
 
 type LineStatusService struct {
@@ -37,11 +37,11 @@ type NotificationService struct {
 	Notifier  notification.Notifier
 }
 
-func (ts LineStatusService) Update(ctx context.Context) error {
-	status, _ := ts.Tfl.AllCurrentDisruptions()
+func (ls LineStatusService) Update(ctx context.Context) error {
+	status, _ := ls.Tfl.AllCurrentDisruptions()
 
 	for _, trainStatus := range status {
-		err := ts.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity)
+		err := ls.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity)
 
 		if err != nil {
 			log.Printf("unable to update train status: %v", err)
@@ -50,26 +50,26 @@ func (ts LineStatusService) Update(ctx context.Context) error {
 	return nil
 }
 
-func (ts LineStatusService) Get(ctx context.Context) ([]*models.Train, error) {
-	return ts.TrainsRepo.FindTrainsThatAreWithinWindow(ctx)
+func (ls LineStatusService) Get(ctx context.Context) ([]*models.Train, error) {
+	return ls.TrainsRepo.FindTrainsThatAreWithinWindow(ctx)
 }
 
-func (us NotificationService) FindAndNotify(ctx context.Context, trains []*models.Train) error {
+func (ns NotificationService) FindAndNotify(ctx context.Context, trains []*models.Train) error {
 	for _, t := range trains {
 		if t.PreviousSeverity == t.Severity {
 			continue
 		}
 
 		if t.IsDisrupted() {
-			users, _ := us.UsersRepo.FindUsersWithDisruptedTrains(ctx, t.Line)
+			users, _ := ns.UsersRepo.FindUsersWithDisruptedTrains(ctx, t.Line)
 			for _, u := range users {
 				msg := fmt.Sprintf("There are %v on the %v.", t.SeverityMessage(), t.Line)
 
-				if err := us.Notifier.Notify(msg, u.Number); err != nil {
+				if err := ns.Notifier.Notify(msg, u.Number); err != nil {
 					log.Printf("unable to notify user: %v", err)
 				}
 
-				if err := us.UsersRepo.UpdateUserLastNotified(ctx, u.ID); err != nil {
+				if err := ns.UsersRepo.UpdateUserLastNotified(ctx, u.ID); err != nil {
 					log.Printf("unable to update user: %v", err)
 				}
 			}
