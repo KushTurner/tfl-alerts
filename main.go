@@ -39,20 +39,7 @@ func main() {
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
 	tflClient, _ := tfl.NewClient(cfg.TflConfig)
 
-	trainSvc := service.LineStatusService{
-		TrainsRepo: db.TrainsRepository,
-		Tfl:        &tflClient,
-	}
-
-	userSvc := service.NotificationService{
-		UsersRepo: db.UsersRepository,
-		Notifier:  smsNotifier,
-	}
-
-	svc := service.DisruptionService{
-		TrainService: trainSvc,
-		UserService:  userSvc,
-	}
+	svc := service.NewDisruptionService(db, smsNotifier, tflClient)
 
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
@@ -63,7 +50,8 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			svc.Start(ctx)
+			svc.PollTrains(ctx)
+			svc.FindUsersAndNotify(ctx)
 		case <-sigChan:
 			log.Println("stopping service...")
 			return
