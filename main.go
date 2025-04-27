@@ -21,12 +21,15 @@ func main() {
 
 	ctx := context.Background()
 
-	db := database.NewTflAlertsDatabase(ctx, cfg.DatabaseConfig)
+	store, _ := database.NewDatabase(ctx, cfg.DatabaseConfig)
+	defer store.Close()
+	usersRepo := store.GetUsersRepository()
+	trainsRepo := store.GetTrainsRepository()
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
 	tflClient, _ := tfl.NewClient(cfg.TflConfig)
 
-	svc := service.NewDisruptionService(db, smsNotifier, tflClient)
+	svc := service.NewDisruptionService(trainsRepo, usersRepo, smsNotifier, tflClient)
 
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
@@ -37,8 +40,8 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			svc.PollTrains(ctx)
-			svc.FindUsersAndNotify(ctx)
+			_ = svc.PollTrains(ctx)
+			_ = svc.FindUsersAndNotify(ctx)
 		case <-sigChan:
 			log.Println("stopping service...")
 			return
