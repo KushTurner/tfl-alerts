@@ -39,7 +39,7 @@ func (r PostgresTrainsRepository) FindTrainsThatAreWithinWindow(ctx context.Cont
 		WHERE nw.weekday = $1
 		    AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
 
-	weekday := int(time.Now().Weekday())
+	weekday := int(time.Now().UTC().Weekday())
 
 	rows, err := r.Db.Query(ctx, sql, weekday)
 

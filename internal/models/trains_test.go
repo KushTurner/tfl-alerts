@@ -10,7 +10,7 @@ func TrainWithSeverity(severity int) *Train {
 	return &Train{
 		ID:               1,
 		Line:             "Jubilee",
-		LastUpdated:      time.Now(),
+		LastUpdated:      time.Now().UTC(),
 		PreviousSeverity: 2,
 		Severity:         severity,
 	}
