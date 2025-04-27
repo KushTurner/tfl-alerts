@@ -1,15 +1,15 @@
 package config
 
 import (
-	"github.com/kushturner/tfl-alerts/internal/api"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
+	"github.com/kushturner/tfl-alerts/internal/tfl"
 	"log"
 	"os"
 )
 
 type AppConfig struct {
-	TflConfig      *api.TflConfig
+	TflConfig      *tfl.Config
 	DatabaseConfig *database.Config
 	TwilioConfig   *notification.TwilioConfig
 }
@@ -20,8 +20,8 @@ func initDatabase() (*database.Config, error) {
 	}, nil
 }
 
-func initTfl() (*api.TflConfig, error) {
-	return &api.TflConfig{
+func initTfl() (*tfl.Config, error) {
+	return &tfl.Config{
 		Url: getEnv("TFL_URL", "https://api.tfl.gov.uk"),
 	}, nil
 }
@@ -40,9 +40,9 @@ func LoadAppConfig() (*AppConfig, error) {
 		log.Fatalf("unable to initialize database config: %v", err)
 	}
 
-	tfl, err := initTfl()
+	tflCfg, err := initTfl()
 	if err != nil {
-		log.Fatalf("unable to initialize tfl client config: %v", err)
+		log.Fatalf("unable to initialize tflCfg client config: %v", err)
 	}
 
 	twilio, err := initTwilio()
@@ -51,7 +51,7 @@ func LoadAppConfig() (*AppConfig, error) {
 	}
 
 	return &AppConfig{
-		tfl,
+		tflCfg,
 		db,
 		twilio,
 	}, nil

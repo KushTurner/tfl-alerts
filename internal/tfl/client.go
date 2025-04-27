@@ -1,4 +1,4 @@
-package api
+package tfl
 
 import (
 	"encoding/json"
@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type TflConfig struct {
+type Config struct {
 	Url string
 }
 
-type TflClient struct {
-	Client *http.Client
-	Url    string
+type Client struct {
+	httpClient *http.Client
+	url        string
 }
 
 type TrainStatus struct {
@@ -28,12 +28,12 @@ type LineStatus struct {
 
 const trainTypes string = "tube,overground,national-rail,elizabeth-line,dlr"
 
-func NewTflClient(cfg *TflConfig) (TflClient, error) {
-	return TflClient{&http.Client{}, cfg.Url}, nil
+func NewClient(cfg *Config) (Client, error) {
+	return Client{&http.Client{}, cfg.Url}, nil
 }
 
-func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
-	resp, err := c.get(c.Url + "/Line/Mode/" + trainTypes + "/Status")
+func (c *Client) AllCurrentDisruptions() ([]TrainStatus, error) {
+	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch status: %v", err)
 	}
@@ -53,7 +53,7 @@ func (c *TflClient) AllCurrentDisruptions() ([]TrainStatus, error) {
 	return t, nil
 }
 
-func (c *TflClient) get(url string) (*http.Response, error) {
+func (c *Client) get(url string) (*http.Response, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "")
@@ -62,7 +62,7 @@ func (c *TflClient) get(url string) (*http.Response, error) {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	resp, err := c.Client.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

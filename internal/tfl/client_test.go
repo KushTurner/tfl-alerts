@@ -1,4 +1,4 @@
-package api
+package tfl
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -6,10 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 )
-
-func FakeTflClient(url string) *TflClient {
-	return &TflClient{&http.Client{}, url}
-}
 
 func TestGetAllDisruptions(t *testing.T) {
 	t.Run("Can make request TFL to get all disruptions", func(t *testing.T) {
@@ -47,7 +43,7 @@ func TestGetAllDisruptions(t *testing.T) {
 			},
 		}
 
-		tfl := FakeTflClient(s.URL)
+		tfl, _ := NewClient(&Config{Url: s.URL})
 		actualTrainStatus, _ := tfl.AllCurrentDisruptions()
 
 		assert.Equal(t, expectedTrainStatus, actualTrainStatus)
