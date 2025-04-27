@@ -15,7 +15,7 @@ type Config struct {
 	ConnStr string
 }
 
-func Connect(ctx context.Context, cfg *Config, migrations fs.FS, seeds embed.FS) (*DB, error) {
+func Connect(ctx context.Context, cfg *Config) (*DB, error) {
 	pgx, err := pgxpool.New(ctx, cfg.ConnStr)
 
 	if err != nil {
@@ -26,18 +26,10 @@ func Connect(ctx context.Context, cfg *Config, migrations fs.FS, seeds embed.FS)
 		return nil, fmt.Errorf("failed to ping database: %v", err)
 	}
 
-	if err := runMigration(migrations, cfg.ConnStr); err != nil {
-		return nil, fmt.Errorf("failed to run seed: %w", err)
-	}
-
-	if err := runSeed(ctx, pgx, seeds); err != nil {
-		return nil, fmt.Errorf("failed to run seed: %w", err)
-	}
-
 	return &DB{pgx}, nil
 }
 
-func runMigration(m fs.FS, connStr string) error {
+func RunMigrate(m fs.FS, connStr string) error {
 	source, err := iofs.New(m, "migrations")
 	if err != nil {
 		return fmt.Errorf("failed to create source: %w", err)
@@ -55,7 +47,7 @@ func runMigration(m fs.FS, connStr string) error {
 	return nil
 }
 
-func runSeed(ctx context.Context, db *pgxpool.Pool, s embed.FS) error {
+func RunSeed(ctx context.Context, db *pgxpool.Pool, s embed.FS) error {
 	dirName := "seeds"
 
 	sf, err := s.ReadDir(dirName)

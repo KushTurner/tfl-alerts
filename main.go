@@ -28,11 +28,21 @@ func main() {
 
 	ctx := context.Background()
 
-	dbConn, err := database.Connect(ctx, cfg.DatabaseConfig, migrations, seeds)
+	dbConn, err := database.Connect(ctx, cfg.DatabaseConfig)
 	if err != nil {
 		log.Panicf("unable to connect to database %v", err)
 	}
 	defer dbConn.Close()
+
+	err = database.RunMigrate(migrations, dbConn.Config().ConnString())
+	if err != nil {
+		log.Panicf("unable to run migration %v", err)
+	}
+
+	err = database.RunSeed(ctx, dbConn.Pool, seeds)
+	if err != nil {
+		log.Panicf("unable to run seed %v", err)
+	}
 
 	db := database.NewTflAlertsDatabase(dbConn)
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
