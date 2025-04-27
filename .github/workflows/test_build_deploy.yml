@@ -2,7 +2,7 @@ name: Build and Deploy TFL Alerts
 
 env:
   APP_NAME: tfl-alerts
-  GO_VERSION: 1.23.1
+  GO_VERSION: 1.24.2
 
 on:
   push:

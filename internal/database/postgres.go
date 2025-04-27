@@ -8,8 +8,13 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
-	"io/fs"
 )
+
+//go:embed migrations/*.sql
+var migrations embed.FS
+
+//go:embed seeds/*.sql
+var seeds embed.FS
 
 type Config struct {
 	ConnStr string
@@ -29,8 +34,8 @@ func Connect(ctx context.Context, cfg *Config) (*DB, error) {
 	return &DB{pgx}, nil
 }
 
-func RunMigrate(m fs.FS, connStr string) error {
-	source, err := iofs.New(m, "migrations")
+func RunMigrate(connStr string) error {
+	source, err := iofs.New(migrations, "migrations")
 	if err != nil {
 		return fmt.Errorf("failed to create source: %w", err)
 	}
@@ -47,16 +52,16 @@ func RunMigrate(m fs.FS, connStr string) error {
 	return nil
 }
 
-func RunSeed(ctx context.Context, db *pgxpool.Pool, s embed.FS) error {
+func RunSeed(ctx context.Context, db *pgxpool.Pool) error {
 	dirName := "seeds"
 
-	sf, err := s.ReadDir(dirName)
+	sf, err := seeds.ReadDir(dirName)
 	if err != nil {
 		return fmt.Errorf("failed to read seed files: %w", err)
 	}
 
 	for _, f := range sf {
-		seed, _ := s.ReadFile(dirName + "/" + f.Name())
+		seed, _ := seeds.ReadFile(dirName + "/" + f.Name())
 
 		if _, err := db.Exec(ctx, string(seed)); err != nil {
 			return fmt.Errorf("failed to execute seed: %w", err)

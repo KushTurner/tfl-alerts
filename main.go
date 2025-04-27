@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"embed"
 	"github.com/kushturner/tfl-alerts/internal/config"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
@@ -14,12 +13,6 @@ import (
 	"time"
 )
 
-//go:embed migrations/*.sql
-var migrations embed.FS
-
-//go:embed seeds/*.sql
-var seeds embed.FS
-
 func main() {
 	cfg, err := config.LoadAppConfig()
 	if err != nil {
@@ -28,23 +21,7 @@ func main() {
 
 	ctx := context.Background()
 
-	dbConn, err := database.Connect(ctx, cfg.DatabaseConfig)
-	if err != nil {
-		log.Panicf("unable to connect to database %v", err)
-	}
-	defer dbConn.Close()
-
-	err = database.RunMigrate(migrations, dbConn.Config().ConnString())
-	if err != nil {
-		log.Panicf("unable to run migration %v", err)
-	}
-
-	err = database.RunSeed(ctx, dbConn.Pool, seeds)
-	if err != nil {
-		log.Panicf("unable to run seed %v", err)
-	}
-
-	db := database.NewTflAlertsDatabase(dbConn)
+	db := database.NewTflAlertsDatabase(ctx, cfg.DatabaseConfig)
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
 	tflClient, _ := tfl.NewClient(cfg.TflConfig)
