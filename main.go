@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"embed"
-	"github.com/kushturner/tfl-alerts/internal/api"
 	"github.com/kushturner/tfl-alerts/internal/config"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
 	"github.com/kushturner/tfl-alerts/internal/service"
+	"github.com/kushturner/tfl-alerts/internal/tfl"
 	"log"
 	"os"
 	"os/signal"
@@ -37,9 +37,22 @@ func main() {
 	db := database.NewTflAlertsDatabase(dbConn)
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
 	smsNotifier, _ := notification.NewSMSNotifier(twilio)
-	tfl, _ := api.NewTflClient(cfg.TflConfig)
+	tflClient, _ := tfl.NewClient(cfg.TflConfig)
 
-	svc := service.NewDisruptionService(db, smsNotifier, tfl)
+	trainSvc := service.LineStatusService{
+		TrainsRepo: db.TrainsRepository,
+		Tfl:        &tflClient,
+	}
+
+	userSvc := service.NotificationService{
+		UsersRepo: db.UsersRepository,
+		Notifier:  smsNotifier,
+	}
+
+	svc := service.DisruptionService{
+		TrainService: trainSvc,
+		UserService:  userSvc,
+	}
 
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
@@ -50,8 +63,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			svc.PollTrains(ctx)
-			svc.FindUsersAndNotify(ctx)
+			svc.Start(ctx)
 		case <-sigChan:
 			log.Println("stopping service...")
 			return
