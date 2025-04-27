@@ -26,7 +26,7 @@ func (r PostgresUsersRepository) FindUsersWithDisruptedTrains(ctx context.Contex
 		  	AND $2 = nw.weekday
   			AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
 
-	weekday := int(time.Now().Weekday())
+	weekday := int(time.Now().UTC().Weekday())
 
 	rows, err := r.Db.Query(ctx, sql, train, weekday)
 
@@ -59,7 +59,7 @@ func (r PostgresUsersRepository) UpdateUserLastNotified(ctx context.Context, use
         SET last_notified = $1
         WHERE id = $2`
 
-	_, err := r.Db.Exec(ctx, sql, time.Now(), userID)
+	_, err := r.Db.Exec(ctx, sql, time.Now().UTC(), userID)
 	if err != nil {
 		return err
 	}
