@@ -34,13 +34,13 @@ func Connect(ctx context.Context, cfg *Config) (*DB, error) {
 	return &DB{pgx}, nil
 }
 
-func RunMigrate(connStr string) error {
+func (db *DB) RunMigrate() error {
 	source, err := iofs.New(migrations, "migrations")
 	if err != nil {
 		return fmt.Errorf("failed to create source: %w", err)
 	}
 
-	migrator, err := migrate.NewWithSourceInstance("iofs", source, connStr)
+	migrator, err := migrate.NewWithSourceInstance("iofs", source, db.Config().ConnString())
 	if err != nil {
 		return fmt.Errorf("migrate new: %s", err)
 	}
@@ -52,7 +52,7 @@ func RunMigrate(connStr string) error {
 	return nil
 }
 
-func RunSeed(ctx context.Context, db *pgxpool.Pool) error {
+func (db *DB) RunSeed(ctx context.Context) error {
 	dirName := "seeds"
 
 	sf, err := seeds.ReadDir(dirName)
