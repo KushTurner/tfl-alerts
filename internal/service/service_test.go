@@ -62,7 +62,7 @@ func NewTestDisruptionService() DisruptionService {
 	}
 }
 
-func TestName(t *testing.T) {
+func TestFindUsersAndNotify(t *testing.T) {
 	t.Run("Can notify users who are disrupted", func(t *testing.T) {
 		ds := NewTestDisruptionService()
 
@@ -70,5 +70,4 @@ func TestName(t *testing.T) {
 
 		assert.NoError(t, err)
 	})
-
 }
