@@ -29,7 +29,7 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 	trains, _ := s.TrainsRepo.FindTrainsThatAreWithinWindow(ctx)
 
 	for _, t := range trains {
-		if t.PreviousSeverity == t.Severity {
+		if t.HasSameSeverity() {
 			continue
 		}
 

@@ -18,6 +18,10 @@ func (t Train) SeverityMessage() string {
 	return severity[t.Severity]
 }
 
+func (t Train) HasSameSeverity() bool {
+	return t.PreviousSeverity == t.Severity
+}
+
 var severity = map[int]string{
 	1:  "Closed",
 	2:  "Suspended",

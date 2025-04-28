@@ -49,3 +49,17 @@ func TestTrain_SeverityMessage(t *testing.T) {
 		assert.Equal(t, train.SeverityMessage(), "Minor Delays")
 	})
 }
+
+func TestTrain_HasSameSeverity(t *testing.T) {
+	t.Run("Will return true if previous severity same as current severity", func(t *testing.T) {
+		hasSameSeverity := TrainWithSeverity(2).HasSameSeverity()
+
+		assert.True(t, hasSameSeverity)
+	})
+
+	t.Run("Will return false if previous severity is not the same as current severity", func(t *testing.T) {
+		hasSameSeverity := TrainWithSeverity(9).HasSameSeverity()
+
+		assert.False(t, hasSameSeverity)
+	})
+}
