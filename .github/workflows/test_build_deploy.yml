@@ -59,6 +59,8 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ env.APP_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create .env File
         run: |
