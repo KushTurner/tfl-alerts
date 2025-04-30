@@ -45,6 +45,9 @@ jobs:
           minor_pattern: "(minor)"
           version_format: "${major}.${minor}.${increment}"
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Add version to environment
         run: echo "APP_VERSION=${{ steps.versioning.outputs.version }}" >> $GITHUB_ENV
 
