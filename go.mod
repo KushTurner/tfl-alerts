@@ -9,7 +9,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.37.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.37.0
-	github.com/twilio/twilio-go v1.26.4
+	github.com/twilio/twilio-go v1.26.5
 )
 
 require (
