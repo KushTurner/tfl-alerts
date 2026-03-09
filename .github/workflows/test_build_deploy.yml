@@ -6,10 +6,10 @@ env:
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths-ignore:
-      - '**.md'
-      - 'docs/**'
+      - "**.md"
+      - "docs/**"
 
 jobs:
   test:
@@ -100,4 +100,7 @@ jobs:
             cd ~/${{ github.event.repository.name }}
             docker compose down --remove-orphans
             docker compose up -d
-            docker images -a | grep -v " ${{ env.APP_VERSION }} " | awk 'NR>1 {print $1 ":" $2}' | xargs docker rmi
+            docker images "${{ secrets.DOCKER_USERNAME }}/tfl-alerts" \
+            --format "{{.Tag}}" | \
+            grep -v "^${{ env.APP_VERSION }}$" | \
+            xargs -I {} docker rmi "${{ secrets.DOCKER_USERNAME }}/tfl-alerts:{}" || true
