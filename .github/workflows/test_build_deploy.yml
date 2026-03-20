@@ -37,7 +37,7 @@ jobs:
 
       - name: Increment Version
         id: versioning
-        uses: paulhatch/semantic-version@v5.4.0
+        uses: paulhatch/semantic-version@v6.0.2
         with:
           tag_prefix: "v"
           major_pattern: "(major)"
