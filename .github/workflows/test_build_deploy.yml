@@ -86,7 +86,7 @@ jobs:
           target: "~/${{ github.event.repository.name }}/"
 
       - name: Start Application
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.5
         env:
           APPTOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ secrets.DEPLOY_USERNAME }}
