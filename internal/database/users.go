@@ -15,6 +15,8 @@ type PostgresUsersRepository struct {
 	Db *DB
 }
 
+var londonLocation, _ = time.LoadLocation("Europe/London")
+
 func (r PostgresUsersRepository) FindUsersWithDisruptedTrains(ctx context.Context, train string) ([]*models.User, error) {
 
 	sql := `
@@ -24,11 +26,13 @@ func (r PostgresUsersRepository) FindUsersWithDisruptedTrains(ctx context.Contex
         		JOIN trains t ON nw.train_id = t.id
 		WHERE lower(t.line) = lower($1)
 		  	AND $2 = nw.weekday
-  			AND CURRENT_TIME BETWEEN nw.start_time AND nw.end_time`
+  			AND $3::time BETWEEN nw.start_time AND nw.end_time`
 
-	weekday := int(time.Now().UTC().Weekday())
+	now := time.Now().In(londonLocation)
+	weekday := int(now.Weekday())
+	currentTime := now.Format("15:04:05")
 
-	rows, err := r.Db.Query(ctx, sql, train, weekday)
+	rows, err := r.Db.Query(ctx, sql, train, weekday, currentTime)
 
 	defer rows.Close()
 
