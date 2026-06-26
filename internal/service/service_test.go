@@ -73,7 +73,7 @@ func TestFindUsersAndNotify(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("Notification message uses line name and disruption summary", func(t *testing.T) {
+	t.Run("Notification message uses disruption description", func(t *testing.T) {
 		notifier := &TestNotifier{}
 		ds := NewTestDisruptionService(notifier)
 
