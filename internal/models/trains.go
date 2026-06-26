@@ -8,6 +8,7 @@ type Train struct {
 	LastUpdated      time.Time
 	PreviousSeverity int
 	Severity         int
+	Summary          string
 }
 
 func (t Train) IsDisrupted() bool {
