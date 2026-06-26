@@ -79,7 +79,7 @@ func TestFindUsersAndNotify(t *testing.T) {
 
 		ds.FindUsersAndNotify(t.Context())
 
-		assert.Equal(t, "Fake Line: Minor delays between A and B due to a signal failure", notifier.LastMessage)
+		assert.Equal(t, "Minor delays between A and B due to a signal failure", notifier.LastMessage)
 	})
 
 	t.Run("Notification message falls back to severity when summary is empty", func(t *testing.T) {
@@ -89,7 +89,7 @@ func TestFindUsersAndNotify(t *testing.T) {
 
 		ds.FindUsersAndNotify(t.Context())
 
-		assert.Equal(t, "Fake Line: Minor Delays", notifier.LastMessage)
+		assert.Equal(t, "There are Minor Delays on the Fake Line.", notifier.LastMessage)
 	})
 }
 

@@ -50,6 +50,21 @@ func TestTrain_SeverityMessage(t *testing.T) {
 	})
 }
 
+func TestTrain_NotificationMessage(t *testing.T) {
+	t.Run("Returns summary when present", func(t *testing.T) {
+		train := TrainWithSeverity(9)
+		train.Summary = "Minor delays between A and B"
+
+		assert.Equal(t, "Minor delays between A and B", train.NotificationMessage())
+	})
+
+	t.Run("Falls back to full sentence when summary is empty", func(t *testing.T) {
+		train := TrainWithSeverity(9)
+
+		assert.Equal(t, "There are Minor Delays on the Jubilee.", train.NotificationMessage())
+	})
+}
+
 func TestTrain_HasSameSeverity(t *testing.T) {
 	t.Run("Will return true if previous severity same as current severity", func(t *testing.T) {
 		hasSameSeverity := TrainWithSeverity(2).HasSameSeverity()
