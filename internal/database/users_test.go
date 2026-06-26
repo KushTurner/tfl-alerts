@@ -7,15 +7,15 @@ import (
 )
 
 func TestPostgresUsersRepository_FindUsersWithDisruptedTrains(t *testing.T) {
-	day := int(time.Now().UTC().Weekday())
+	now := time.Now().In(londonLocation)
+	day := int(now.Weekday())
 
 	t.Run("Can find users that have trains that are considered disrupted", func(t *testing.T) {
 		connStr := CreatePostgresInstance(t)
 		db := NewTestDatabase(t, connStr)
 
-		currTime := time.Now().UTC()
-		startTime := currTime.Add(time.Minute * -10)
-		endTime := currTime.Add(time.Minute * 10)
+		startTime := now.Add(time.Minute * -10)
+		endTime := now.Add(time.Minute * 10)
 		db.Exec(t.Context(), `INSERT INTO users (id, last_notified, phone_number) VALUES (1, now(), 'number')`)
 		db.Exec(t.Context(), `INSERT INTO notification_windows (id, user_id, train_id, start_time, end_time, weekday) VALUES (1, 1, 1, $1, $2, $3)`, startTime, endTime, day)
 
@@ -28,14 +28,14 @@ func TestPostgresUsersRepository_FindUsersWithDisruptedTrains(t *testing.T) {
 		connStr := CreatePostgresInstance(t)
 		db := NewTestDatabase(t, connStr)
 
-		currTime := time.Now().UTC()
-		startTime := currTime.Add(time.Minute * -5)
-		endTime := currTime.Add(time.Minute * -5)
+		startTime := now.Add(time.Minute * -5)
+		endTime := now.Add(time.Minute * -5)
 		db.Exec(t.Context(), `INSERT INTO users (id, last_notified, phone_number) VALUES (1, now(), 'number')`)
 		db.Exec(t.Context(), `INSERT INTO notification_windows (id, user_id, train_id, start_time, end_time, weekday) VALUES (1, 1, 1, $1, $2, $3)`, startTime, endTime, day)
 
 		actual, _ := db.GetUsersRepository().FindUsersWithDisruptedTrains(t.Context(), "Avanti West Coast")
 
 		assert.Equal(t, 0, len(actual))
+
 	})
 }
