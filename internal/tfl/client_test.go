@@ -25,7 +25,7 @@ func TestGetAllDisruptions(t *testing.T) {
 						"statusSeverityDescription": "Minor Delays",
 						"reason": "https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/",
 						"disruption": {
-						  "summary": "Minor delays between London Euston and Birmingham due to an earlier fault"
+						  "description": "Minor delays between London Euston and Birmingham due to an earlier fault"
 						}
 					  }
 					]
@@ -43,7 +43,7 @@ func TestGetAllDisruptions(t *testing.T) {
 						StatusSeverityDescription: "Minor Delays",
 						Reason:                    "https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/",
 						Disruption: Disruption{
-							Summary: "Minor delays between London Euston and Birmingham due to an earlier fault",
+							Description: "Minor delays between London Euston and Birmingham due to an earlier fault",
 						},
 					},
 				},

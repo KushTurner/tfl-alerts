@@ -21,7 +21,7 @@ type TrainStatus struct {
 }
 
 type Disruption struct {
-	Summary string `json:"summary"`
+	Description string `json:"description"`
 }
 
 type LineStatus struct {

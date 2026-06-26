@@ -58,7 +58,7 @@ func (s DisruptionService) PollTrains(ctx context.Context) error {
 	}
 
 	for _, trainStatus := range status {
-		summary := trainStatus.LineStatuses[0].Disruption.Summary
+		summary := trainStatus.LineStatuses[0].Disruption.Description
 		err := s.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity, summary)
 
 		if err != nil {
