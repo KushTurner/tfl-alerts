@@ -1,0 +1,1 @@
+ALTER TABLE trains ADD COLUMN summary TEXT NULL;

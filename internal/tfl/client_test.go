@@ -12,6 +12,7 @@ func TestGetAllDisruptions(t *testing.T) {
 		s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "GET", r.Method)
 			assert.Equal(t, "/Line/Mode/tube,overground,national-rail,elizabeth-line,dlr/Status", r.URL.Path)
+			assert.Equal(t, "true", r.URL.Query().Get("detail"))
 			assert.Equal(t, "", r.Header.Get("User-Agent"))
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(
@@ -22,7 +23,10 @@ func TestGetAllDisruptions(t *testing.T) {
 					  {
 						"statusSeverity": 9,
 						"statusSeverityDescription": "Minor Delays",
-						"reason": "https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/"
+						"reason": "https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/",
+						"disruption": {
+						  "summary": "Minor delays between London Euston and Birmingham due to an earlier fault"
+						}
 					  }
 					]
 				  }
@@ -38,6 +42,9 @@ func TestGetAllDisruptions(t *testing.T) {
 						StatusSeverity:            9,
 						StatusSeverityDescription: "Minor Delays",
 						Reason:                    "https://www.nationalrail.co.uk/service-disruptions/polesworth-20241204/",
+						Disruption: Disruption{
+							Summary: "Minor delays between London Euston and Birmingham due to an earlier fault",
+						},
 					},
 				},
 			},

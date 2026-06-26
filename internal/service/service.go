@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
 	"github.com/kushturner/tfl-alerts/internal/tfl"
@@ -36,7 +35,7 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 		if t.IsDisrupted() {
 			users, _ := s.UsersRepo.FindUsersWithDisruptedTrains(ctx, t.Line)
 			for _, u := range users {
-				msg := fmt.Sprintf("There are %v on the %v.", t.SeverityMessage(), t.Line)
+				msg := t.NotificationMessage()
 
 				if err := s.Notifier.Notify(msg, u.Number); err != nil {
 					log.Printf("unable to notify user: %v", err)
@@ -59,7 +58,8 @@ func (s DisruptionService) PollTrains(ctx context.Context) error {
 	}
 
 	for _, trainStatus := range status {
-		err := s.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity)
+		summary := trainStatus.LineStatuses[0].Disruption.Summary
+		err := s.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity, summary)
 
 		if err != nil {
 			log.Printf("unable to update train status: %v", err)

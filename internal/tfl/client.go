@@ -20,10 +20,15 @@ type TrainStatus struct {
 	LineStatuses []LineStatus `json:"lineStatuses"`
 }
 
+type Disruption struct {
+	Summary string `json:"summary"`
+}
+
 type LineStatus struct {
-	StatusSeverity            int    `json:"statusSeverity"`
-	StatusSeverityDescription string `json:"statusSeverityDescription"`
-	Reason                    string `json:"reason"`
+	StatusSeverity            int        `json:"statusSeverity"`
+	StatusSeverityDescription string     `json:"statusSeverityDescription"`
+	Reason                    string     `json:"reason"`
+	Disruption                Disruption `json:"disruption"`
 }
 
 const trainTypes string = "tube,overground,national-rail,elizabeth-line,dlr"
@@ -33,7 +38,7 @@ func NewClient(cfg *Config) (Client, error) {
 }
 
 func (c *Client) AllCurrentDisruptions() ([]TrainStatus, error) {
-	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status")
+	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status?detail=true")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch status: %v", err)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 type TrainsRepository interface {
-	UpdateTrainStatus(ctx context.Context, train string, severity int) error
+	UpdateTrainStatus(ctx context.Context, train string, severity int, summary string) error
 	FindTrainsThatAreWithinWindow(ctx context.Context) ([]*models.Train, error)
 }
 
@@ -15,15 +15,16 @@ type PostgresTrainsRepository struct {
 	Db *DB
 }
 
-func (r PostgresTrainsRepository) UpdateTrainStatus(ctx context.Context, train string, severity int) error {
+func (r PostgresTrainsRepository) UpdateTrainStatus(ctx context.Context, train string, severity int, summary string) error {
 	sql := `
-        UPDATE trains 
+        UPDATE trains
         SET previous_severity = severity,
         	severity = $1,
+        	summary = $2,
         	last_updated = now()
-        WHERE lower(line) = lower($2)`
+        WHERE lower(line) = lower($3)`
 
-	_, err := r.Db.Exec(ctx, sql, severity, train)
+	_, err := r.Db.Exec(ctx, sql, severity, summary, train)
 	if err != nil {
 		return err
 	}
@@ -33,7 +34,7 @@ func (r PostgresTrainsRepository) UpdateTrainStatus(ctx context.Context, train s
 
 func (r PostgresTrainsRepository) FindTrainsThatAreWithinWindow(ctx context.Context) ([]*models.Train, error) {
 	sql := `
-		SELECT DISTINCT t.id, t.line, t.previous_severity, t.severity
+		SELECT DISTINCT t.id, t.line, t.previous_severity, t.severity, COALESCE(t.summary, '')
 		FROM trains t
 			JOIN notification_windows nw ON t.id = nw.train_id
 		WHERE nw.weekday = $1
@@ -53,7 +54,7 @@ func (r PostgresTrainsRepository) FindTrainsThatAreWithinWindow(ctx context.Cont
 
 	for rows.Next() {
 		train := &models.Train{}
-		err := rows.Scan(&train.ID, &train.Line, &train.PreviousSeverity, &train.Severity)
+		err := rows.Scan(&train.ID, &train.Line, &train.PreviousSeverity, &train.Severity, &train.Summary)
 
 		if err != nil {
 			return nil, err

@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Train struct {
 	ID               int
@@ -8,6 +11,7 @@ type Train struct {
 	LastUpdated      time.Time
 	PreviousSeverity int
 	Severity         int
+	Summary          string
 }
 
 func (t Train) IsDisrupted() bool {
@@ -16,6 +20,13 @@ func (t Train) IsDisrupted() bool {
 
 func (t Train) SeverityMessage() string {
 	return severity[t.Severity]
+}
+
+func (t Train) NotificationMessage() string {
+	if t.Summary != "" {
+		return t.Summary
+	}
+	return fmt.Sprintf("There are %v on the %v.", t.SeverityMessage(), t.Line)
 }
 
 func (t Train) HasSameSeverity() bool {
