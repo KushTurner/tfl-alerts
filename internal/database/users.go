@@ -33,12 +33,10 @@ func (r PostgresUsersRepository) FindUsersWithDisruptedTrains(ctx context.Contex
 	currentTime := now.Format("15:04:05")
 
 	rows, err := r.Db.Query(ctx, sql, train, weekday, currentTime)
-
-	defer rows.Close()
-
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var users []*models.User
 

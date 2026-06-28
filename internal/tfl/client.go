@@ -40,7 +40,7 @@ func NewClient(cfg *Config) (Client, error) {
 func (c *Client) AllCurrentDisruptions() ([]TrainStatus, error) {
 	resp, err := c.get(c.url + "/Line/Mode/" + trainTypes + "/Status?detail=true")
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch status: %v", err)
+		return nil, fmt.Errorf("failed to fetch status: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -52,20 +52,19 @@ func (c *Client) AllCurrentDisruptions() ([]TrainStatus, error) {
 	var t []TrainStatus
 
 	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
-		return nil, fmt.Errorf("failed to decode disruptions: %v", err)
+		return nil, fmt.Errorf("failed to decode disruptions: %w", err)
 	}
 
 	return t, nil
 }
 
 func (c *Client) get(url string) (*http.Response, error) {
-
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "")
-
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.Header.Set("User-Agent", "")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
