@@ -15,15 +15,15 @@ type DB struct {
 func NewDatabase(ctx context.Context, config *Config) (*DB, error) {
 	db, err := Connect(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("unable to initialize postgres: %v", err)
+		return nil, fmt.Errorf("unable to initialize postgres: %w", err)
 	}
 	err = db.RunMigrate()
 	if err != nil {
-		return nil, fmt.Errorf("unable to run migration: %v", err)
+		return nil, fmt.Errorf("unable to run migration: %w", err)
 	}
 	err = db.RunSeed(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("unable to run seed: %v", err)
+		return nil, fmt.Errorf("unable to run seed: %w", err)
 	}
 
 	return db, nil

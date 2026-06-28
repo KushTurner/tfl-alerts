@@ -16,18 +16,30 @@ import (
 func main() {
 	cfg, err := config.LoadAppConfig()
 	if err != nil {
-		log.Panicf("unable to load config: %v", err)
+		log.Fatalf("unable to load config: %v", err)
 	}
 
 	ctx := context.Background()
 
-	store, _ := database.NewDatabase(ctx, cfg.DatabaseConfig)
+	store, err := database.NewDatabase(ctx, cfg.DatabaseConfig)
+	if err != nil {
+		log.Fatalf("unable to initialise database: %v", err)
+	}
 	defer store.Close()
+
 	usersRepo := store.GetUsersRepository()
 	trainsRepo := store.GetTrainsRepository()
+
 	twilio := notification.NewTwilioClient(cfg.TwilioConfig)
-	smsNotifier, _ := notification.NewSMSNotifier(twilio)
-	tflClient, _ := tfl.NewClient(cfg.TflConfig)
+	smsNotifier, err := notification.NewSMSNotifier(twilio)
+	if err != nil {
+		log.Fatalf("unable to initialise SMS notifier: %v", err)
+	}
+
+	tflClient, err := tfl.NewClient(cfg.TflConfig)
+	if err != nil {
+		log.Fatalf("unable to initialise TFL client: %v", err)
+	}
 
 	svc := service.NewDisruptionService(trainsRepo, usersRepo, smsNotifier, tflClient)
 
@@ -40,8 +52,12 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			_ = svc.PollTrains(ctx)
-			_ = svc.FindUsersAndNotify(ctx)
+			if err := svc.PollTrains(ctx); err != nil {
+				log.Printf("poll trains: %v", err)
+			}
+			if err := svc.FindUsersAndNotify(ctx); err != nil {
+				log.Printf("find users and notify: %v", err)
+			}
 		case <-sigChan:
 			log.Println("stopping service...")
 			return

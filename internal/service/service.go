@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/kushturner/tfl-alerts/internal/database"
 	"github.com/kushturner/tfl-alerts/internal/notification"
 	"github.com/kushturner/tfl-alerts/internal/tfl"
@@ -25,7 +26,10 @@ func NewDisruptionService(trainsRepo database.TrainsRepository, usersRepo databa
 }
 
 func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
-	trains, _ := s.TrainsRepo.FindTrainsThatAreWithinWindow(ctx)
+	trains, err := s.TrainsRepo.FindTrainsThatAreWithinWindow(ctx)
+	if err != nil {
+		return fmt.Errorf("finding trains within window: %w", err)
+	}
 
 	for _, t := range trains {
 		if t.HasSameSeverity() {
@@ -33,16 +37,20 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 		}
 
 		if t.IsDisrupted() {
-			users, _ := s.UsersRepo.FindUsersWithDisruptedTrains(ctx, t.Line)
+			users, err := s.UsersRepo.FindUsersWithDisruptedTrains(ctx, t.Line)
+			if err != nil {
+				return fmt.Errorf("finding users for train %s: %w", t.Line, err)
+			}
+
 			for _, u := range users {
 				msg := t.NotificationMessage()
 
 				if err := s.Notifier.Notify(msg, u.Number); err != nil {
-					log.Printf("unable to notify user: %v", err)
+					log.Printf("unable to notify user %d: %v", u.ID, err)
 				}
 
 				if err := s.UsersRepo.UpdateUserLastNotified(ctx, u.ID); err != nil {
-					log.Printf("unable to update user: %v", err)
+					log.Printf("unable to update last notified for user %d: %v", u.ID, err)
 				}
 			}
 		}
@@ -52,17 +60,14 @@ func (s DisruptionService) FindUsersAndNotify(ctx context.Context) error {
 
 func (s DisruptionService) PollTrains(ctx context.Context) error {
 	status, err := s.Tfl.AllCurrentDisruptions()
-
 	if err != nil {
-		log.Printf("unable to get all current disruptions: %v", err)
+		return fmt.Errorf("fetching disruptions: %w", err)
 	}
 
 	for _, trainStatus := range status {
 		summary := trainStatus.LineStatuses[0].Disruption.Description
-		err := s.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity, summary)
-
-		if err != nil {
-			log.Printf("unable to update train status: %v", err)
+		if err := s.TrainsRepo.UpdateTrainStatus(ctx, trainStatus.Name, trainStatus.LineStatuses[0].StatusSeverity, summary); err != nil {
+			log.Printf("unable to update train status for %s: %v", trainStatus.Name, err)
 		}
 	}
 

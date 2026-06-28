@@ -43,12 +43,10 @@ func (r PostgresTrainsRepository) FindTrainsThatAreWithinWindow(ctx context.Cont
 	weekday := int(time.Now().UTC().Weekday())
 
 	rows, err := r.Db.Query(ctx, sql, weekday)
-
-	defer rows.Close()
-
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var trains []*models.Train
 
