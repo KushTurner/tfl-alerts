@@ -27,3 +27,6 @@ go.work.sum
 
 # Intellij
 .idea
+
+# macOS
+.DS_Store
